@@ -71,6 +71,13 @@ Khi ứng dụng chạy lần đầu, database sẽ tự động được tạo 
   - Email: admin@webbantranhdangian.com
   - Password: Admin123
 
-## Người phát triển
+## Người phát triển - Thông tin liên hệ và hỗ trợ
+
+Nếu bạn cần hỗ trợ hoặc có câu hỏi, vui lòng liên hệ:
+
+- Email: cuonghotran17022004@gmail.com
+- zalo: 0355999141
+
+---
 
 - Phát triển bởi Trang Web Bán Tranh Dân Gian
