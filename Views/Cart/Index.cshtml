@@ -1,0 +1,123 @@
+@model IEnumerable<WebBanTranhDanGian.Controllers.CartItem>
+
+@{
+    ViewData["Title"] = "Giỏ hàng";
+    decimal totalAmount = 0;
+}
+
+<div class="container mx-auto px-4 py-8">
+    <h1 class="text-3xl font-bold text-gray-800 mb-6">Giỏ hàng của bạn</h1>
+
+    @if (!Model.Any())
+    {
+        <div class="bg-white p-8 rounded-lg shadow-md text-center">
+            <i class="fas fa-shopping-cart text-gray-400 text-5xl mb-4"></i>
+            <h2 class="text-xl font-semibold text-gray-800 mb-2">Giỏ hàng của bạn đang trống</h2>
+            <p class="text-gray-600 mb-4">Hãy thêm sản phẩm vào giỏ hàng và quay lại.</p>
+            <a href="@Url.Action("Index", "Product")" class="inline-block bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 px-6 rounded-lg transition duration-300">Tiếp tục mua sắm</a>
+        </div>
+    }
+    else
+    {
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Cart items -->
+            <div class="lg:col-span-2">
+                <div class="bg-white rounded-lg shadow-md overflow-hidden">
+                    <div class="p-4 border-b">
+                        <h2 class="text-lg font-semibold text-gray-800">Sản phẩm</h2>
+                    </div>
+                    <div class="divide-y divide-gray-200">
+                        @foreach (var item in Model)
+                        {
+                            totalAmount += item.Total;
+                            <div class="p-4 flex flex-col sm:flex-row items-center">
+                                <div class="sm:w-20 mb-4 sm:mb-0">
+                                    <img src="@item.Product.ImageUrl" alt="@item.Product.Name" class="w-16 h-16 object-cover rounded-md" onerror="this.src='/images/no-image.jpg'" />
+                                </div>
+                                <div class="sm:flex-1 text-center sm:text-left">
+                                    <h3 class="text-lg font-semibold text-gray-800">@item.Product.Name</h3>
+                                    <p class="text-sm text-gray-500">@item.Product.Category.Name</p>
+                                </div>
+                                <div class="flex items-center mt-4 sm:mt-0">
+                                    <form asp-controller="Cart" asp-action="UpdateQuantity" method="post" class="flex items-center border border-gray-300 rounded-lg mr-4">
+                                        <input type="hidden" name="productId" value="@item.ProductId" />
+                                        <button type="button" class="w-8 h-8 flex items-center justify-center text-gray-600 hover:text-indigo-600 border-r border-gray-300" onclick="decreaseQuantity('@item.ProductId')">-</button>
+                                        <input type="number" id="quantity-@item.ProductId" name="quantity" value="@item.Quantity" min="1" max="@item.Product.StockQuantity" class="w-12 h-8 text-center focus:outline-none focus:ring-1 focus:ring-indigo-500" onchange="this.form.submit()" />
+                                        <button type="button" class="w-8 h-8 flex items-center justify-center text-gray-600 hover:text-indigo-600 border-l border-gray-300" onclick="increaseQuantity('@item.ProductId', @item.Product.StockQuantity)">+</button>
+                                    </form>
+                                    <div class="text-right min-w-[100px]">
+                                        <div class="text-indigo-600 font-semibold">@string.Format("{0:N0} ₫", item.Total)</div>
+                                        <div class="text-sm text-gray-500">@string.Format("{0:N0} ₫", item.Product.Price) × @item.Quantity</div>
+                                    </div>
+                                    <a href="@Url.Action("RemoveItem", "Cart", new { productId = item.ProductId })" class="ml-4 text-red-500 hover:text-red-600">
+                                        <i class="fas fa-trash-alt"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                    <div class="p-4 border-t flex justify-between items-center">
+                        <a href="@Url.Action("Index", "Product")" class="text-indigo-600 hover:text-indigo-700 font-medium">
+                            <i class="fas fa-arrow-left mr-2"></i> Tiếp tục mua sắm
+                        </a>
+                        <a href="@Url.Action("ClearCart", "Cart")" class="text-red-500 hover:text-red-600 font-medium">
+                            <i class="fas fa-trash mr-2"></i> Xóa giỏ hàng
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Order summary -->
+            <div class="lg:col-span-1">
+                <div class="bg-white rounded-lg shadow-md overflow-hidden sticky top-24">
+                    <div class="p-4 border-b">
+                        <h2 class="text-lg font-semibold text-gray-800">Thông tin đơn hàng</h2>
+                    </div>
+                    <div class="p-4">
+                        <div class="flex justify-between mb-2">
+                            <span class="text-gray-600">Tạm tính (@Model.Sum(i => i.Quantity) sản phẩm):</span>
+                            <span class="font-semibold">@string.Format("{0:N0} ₫", totalAmount)</span>
+                        </div>
+                        <div class="flex justify-between mb-2">
+                            <span class="text-gray-600">Phí vận chuyển:</span>
+                            <span class="font-semibold">0 ₫</span>
+                        </div>
+                        <hr class="my-4">
+                        <div class="flex justify-between mb-4">
+                            <span class="text-lg font-semibold">Tổng cộng:</span>
+                            <span class="text-xl font-bold text-indigo-600">@string.Format("{0:N0} ₫", totalAmount)</span>
+                        </div>
+                        <a href="@Url.Action("Checkout", "Order")" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-4 rounded-lg transition duration-300 flex items-center justify-center">
+                            Thanh toán
+                            <i class="fas fa-arrow-right ml-2"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+@section Scripts {
+    <script>
+        function increaseQuantity(productId, maxStock) {
+            var quantityInput = document.getElementById('quantity-' + productId);
+            var currentValue = parseInt(quantityInput.value);
+            
+            if (currentValue < maxStock) {
+                quantityInput.value = currentValue + 1;
+                quantityInput.form.submit();
+            }
+        }
+
+        function decreaseQuantity(productId) {
+            var quantityInput = document.getElementById('quantity-' + productId);
+            var currentValue = parseInt(quantityInput.value);
+            
+            if (currentValue > 1) {
+                quantityInput.value = currentValue - 1;
+                quantityInput.form.submit();
+            }
+        }
+    </script>
+} 

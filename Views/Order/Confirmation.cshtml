@@ -1,0 +1,122 @@
+@model WebBanTranhDanGian.Models.Order
+
+@{
+    ViewData["Title"] = "Đặt hàng thành công";
+}
+
+<div class="container mx-auto px-4 py-8">
+    <div class="max-w-3xl mx-auto">
+        <div class="bg-white rounded-lg shadow-md overflow-hidden">
+            <div class="p-6 text-center">
+                <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-check text-green-500 text-2xl"></i>
+                </div>
+                <h1 class="text-2xl font-bold text-gray-800 mb-2">Đặt hàng thành công!</h1>
+                <p class="text-gray-600 mb-4">Cảm ơn bạn đã đặt hàng tại Website Tranh Dân Gian</p>
+                <div class="bg-gray-50 rounded-lg p-4 inline-block mb-6">
+                    <span class="text-sm text-gray-500">Mã đơn hàng:</span>
+                    <span class="text-lg font-semibold text-gray-800 ml-2">@Model.OrderNumber</span>
+                </div>
+            </div>
+
+            <div class="px-6 pb-6">
+                <div class="border rounded-lg overflow-hidden">
+                    <div class="bg-gray-50 px-4 py-3 border-b">
+                        <h2 class="font-semibold text-gray-800">Thông tin đơn hàng</h2>
+                    </div>
+                    <div class="p-4">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <h3 class="text-sm font-medium text-gray-500 mb-2">Thông tin người nhận</h3>
+                                <p class="text-gray-800 font-medium">@Model.ShipName</p>
+                                <p class="text-gray-600">@Model.ShipPhone</p>
+                                @if (!string.IsNullOrEmpty(Model.ShipEmail))
+                                {
+                                    <p class="text-gray-600">@Model.ShipEmail</p>
+                                }
+                                <p class="text-gray-600">@Model.ShipAddress</p>
+                            </div>
+                            <div>
+                                <h3 class="text-sm font-medium text-gray-500 mb-2">Thông tin thanh toán</h3>
+                                <p class="text-gray-800">
+                                    <span class="font-medium">Phương thức thanh toán:</span>
+                                    @(Model.PaymentMethod == "COD" ? "Thanh toán khi nhận hàng (COD)" : 
+                                      Model.PaymentMethod == "BankTransfer" ? "Chuyển khoản ngân hàng" : 
+                                      Model.PaymentMethod)
+                                </p>
+                                <p class="text-gray-800">
+                                    <span class="font-medium">Trạng thái thanh toán:</span>
+                                    @(Model.IsPaid ? "Đã thanh toán" : "Chưa thanh toán")
+                                </p>
+                                <p class="text-gray-800">
+                                    <span class="font-medium">Ngày đặt hàng:</span>
+                                    @Model.OrderDate.ToString("dd/MM/yyyy HH:mm")
+                                </p>
+                                <p class="text-gray-800">
+                                    <span class="font-medium">Trạng thái đơn hàng:</span>
+                                    @(Model.Status == "Pending" ? "Chờ xác nhận" :
+                                      Model.Status == "Processing" ? "Đang xử lý" :
+                                      Model.Status == "Shipped" ? "Đang giao hàng" :
+                                      Model.Status == "Delivered" ? "Đã giao hàng" :
+                                      Model.Status == "Cancelled" ? "Đã hủy" :
+                                      Model.Status)
+                                </p>
+                            </div>
+                        </div>
+
+                        @if (!string.IsNullOrEmpty(Model.Note))
+                        {
+                            <div class="mt-4 bg-gray-50 p-3 rounded-lg">
+                                <h3 class="text-sm font-medium text-gray-500 mb-1">Ghi chú</h3>
+                                <p class="text-gray-800">@Model.Note</p>
+                            </div>
+                        }
+                    </div>
+                </div>
+
+                <div class="mt-6 border rounded-lg overflow-hidden">
+                    <div class="bg-gray-50 px-4 py-3 border-b">
+                        <h2 class="font-semibold text-gray-800">Chi tiết sản phẩm</h2>
+                    </div>
+                    <div class="divide-y divide-gray-200">
+                        @foreach (var item in Model.OrderDetails)
+                        {
+                            <div class="p-4 flex items-center">
+                                <div class="w-16 h-16 flex-shrink-0">
+                                    <img src="@item.Product.ImageUrl" alt="@item.Product.Name" class="w-full h-full object-cover rounded" onerror="this.src='/images/no-image.jpg'" />
+                                </div>
+                                <div class="ml-4 flex-1">
+                                    <h4 class="text-sm font-medium text-gray-800">@item.Product.Name</h4>
+                                    <div class="text-xs text-gray-500">@string.Format("{0:N0} ₫", item.UnitPrice) × @item.Quantity</div>
+                                </div>
+                                <div class="text-right">
+                                    <span class="text-gray-800 font-semibold">@string.Format("{0:N0} ₫", item.TotalPrice)</span>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                    <div class="bg-gray-50 p-4 border-t">
+                        <div class="flex justify-between mb-2">
+                            <span class="text-gray-600">Tạm tính:</span>
+                            <span class="font-semibold">@string.Format("{0:N0} ₫", Model.TotalAmount)</span>
+                        </div>
+                        <div class="flex justify-between mb-2">
+                            <span class="text-gray-600">Phí vận chuyển:</span>
+                            <span class="font-semibold">0 ₫</span>
+                        </div>
+                        <div class="flex justify-between pt-2 border-t border-gray-200">
+                            <span class="text-lg font-semibold">Tổng cộng:</span>
+                            <span class="text-xl font-bold text-indigo-600">@string.Format("{0:N0} ₫", Model.TotalAmount)</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-8 text-center">
+                    <a href="@Url.Action("Index", "Home")" class="inline-block bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 px-6 rounded-lg transition duration-300 mr-4">
+                        Tiếp tục mua sắm
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div> 

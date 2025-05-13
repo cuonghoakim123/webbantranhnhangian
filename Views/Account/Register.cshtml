@@ -1,0 +1,79 @@
+@model WebBanTranhDanGian.Models.User
+
+@{
+    ViewData["Title"] = "Đăng ký";
+}
+
+<div class="container mx-auto px-4 py-8">
+    <div class="max-w-md mx-auto">
+        <div class="bg-white rounded-lg shadow-md overflow-hidden">
+            <div class="p-6">
+                <h1 class="text-2xl font-bold text-gray-800 mb-6 text-center">Đăng ký tài khoản</h1>
+
+                <form asp-controller="Account" asp-action="Register" method="post">
+                    <div class="mb-4">
+                        <label asp-for="FullName" class="block text-sm font-medium text-gray-700 mb-1">Họ tên <span class="text-red-500">*</span></label>
+                        <input asp-for="FullName" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-1 focus:ring-indigo-500" placeholder="Nhập họ tên của bạn" required />
+                        <span asp-validation-for="FullName" class="text-sm text-red-500"></span>
+                    </div>
+
+                    <div class="mb-4">
+                        <label asp-for="Email" class="block text-sm font-medium text-gray-700 mb-1">Email <span class="text-red-500">*</span></label>
+                        <input asp-for="Email" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-1 focus:ring-indigo-500" placeholder="Nhập địa chỉ email" required />
+                        <span asp-validation-for="Email" class="text-sm text-red-500"></span>
+                    </div>
+
+                    <div class="mb-4">
+                        <label asp-for="Password" class="block text-sm font-medium text-gray-700 mb-1">Mật khẩu <span class="text-red-500">*</span></label>
+                        <input asp-for="Password" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-1 focus:ring-indigo-500" placeholder="Nhập mật khẩu (tối thiểu 6 ký tự)" required />
+                        <span asp-validation-for="Password" class="text-sm text-red-500"></span>
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="ConfirmPassword" class="block text-sm font-medium text-gray-700 mb-1">Xác nhận mật khẩu <span class="text-red-500">*</span></label>
+                        <input type="password" id="ConfirmPassword" name="ConfirmPassword" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-1 focus:ring-indigo-500" placeholder="Nhập lại mật khẩu" required />
+                    </div>
+
+                    <div class="mb-4">
+                        <label asp-for="Phone" class="block text-sm font-medium text-gray-700 mb-1">Số điện thoại</label>
+                        <input asp-for="Phone" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-1 focus:ring-indigo-500" placeholder="Nhập số điện thoại" />
+                        <span asp-validation-for="Phone" class="text-sm text-red-500"></span>
+                    </div>
+
+                    <div class="mb-6">
+                        <label asp-for="Address" class="block text-sm font-medium text-gray-700 mb-1">Địa chỉ</label>
+                        <textarea asp-for="Address" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-1 focus:ring-indigo-500" rows="2" placeholder="Nhập địa chỉ"></textarea>
+                        <span asp-validation-for="Address" class="text-sm text-red-500"></span>
+                    </div>
+
+                    <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 px-4 rounded-lg transition duration-300 mb-4">
+                        Đăng ký
+                    </button>
+
+                    <div class="text-center">
+                        <p class="text-gray-600">
+                            Đã có tài khoản? 
+                            <a href="@Url.Action("Login", "Account")" class="text-indigo-600 hover:text-indigo-800 font-medium">Đăng nhập</a>
+                        </p>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+        // Client-side validation for password confirmation
+        document.querySelector('form').addEventListener('submit', function (e) {
+            var password = document.getElementById('Password').value;
+            var confirmPassword = document.getElementById('ConfirmPassword').value;
+            
+            if (password !== confirmPassword) {
+                e.preventDefault();
+                alert('Mật khẩu xác nhận không khớp!');
+            }
+        });
+    </script>
+} 
